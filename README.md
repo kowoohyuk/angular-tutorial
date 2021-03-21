@@ -63,3 +63,67 @@ export class ProductAlertsComponent implements OnInit {
 > 템플릿 문법 : https://angular.kr/guide/architecture-components#template-syntax
 
 > 컴포넌트 통신 : https://angular.kr/guide/component-interaction
+
+___ 
+
+## 2. [Angular 네비게이션](https://angular.kr/start/start-routing)
+
+```html
+<script>
+// app.module.ts
+// @NgModule 내부에 라우팅 규칙을 추가한다.
+RouterModule.forRoot([
+  { path: "", component: ProductListComponent },
+  // /products 경로 면서 다음 값은 id가 됨. 익스프레스 경로 라우팅과 같은 문법
+  { path: "products/:productId", component: ProductDetailsComponent }
+])
+</script>
+
+product-list.html
+
+ngFor에서 index의 명칭을 productId로 변경
+<div *ngFor="let product of products; index as productId">
+routerLink 디렉티브는 배열형태로 값을 추가할 수 있다.
+프토퍼티를 넣는 문법인 대괄호를 사용
+<a [title]="product.name + ' details'" [routerLink]="['/products', productId]"></a>
+</div>
+
+<script>
+//product-details.ts
+
+// ActivatedRoute는 앵귤러 라우터가 동작할 때 사용되는 특정 라우팅 규칙을 의미한다.
+// private는 타입스크립트 키워드. 자바의 private와 같겠지?
+constructor(private route: ActivatedRoute) {}
+
+ngOnInit() {
+  // 파라미터에서 productId라고 되어 있는 값을 가져오고 숫자로 형변환한다.
+  // express에서 가져오는 것보다 간단하면서도 불편해보인다, 익숙해져야할듯.
+  this.route.paramMap.subscribe(params => {
+    this.product = products[+params.get('productId')];
+  });
+}
+
+</script>
+
+
+product-details.html
+
+<h2>Product Details</h2>
+
+<div *ngIf="product">
+  <h3>{{ product.name }}</h3>
+  currency라는 파이프를 통해 699라는 숫자를 $699.00 로 달러 단위로 표기한다.
+  기본 값이 dollar.
+  currency:'EUR'로 하면 유로도 가능! 멋지다..
+  <h4>{{ product.price | currency }}</h4>
+  <h4>{{ product.price | currency:'EUR' }}</h4>
+  <h4>{{ product.price | currency:'USD':'dollar ' }}</h4>
+  <p>{{ product.description }}</p>
+</div>
+```
+
+**참고**
+> 데이터 다루기 : https://angular.kr/start/start-data
+> 파이프 : https://angular.kr/guide/pipes
+
+___ 
