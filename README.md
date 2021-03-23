@@ -122,8 +122,81 @@ product-details.html
 </div>
 ```
 
+[결과 코드](https://stackblitz.com/edit/angular-y9kqxe-toaec2?file=src%2Fapp%2Fapp.module.ts)
+
 **참고**
 > 데이터 다루기 : https://angular.kr/start/start-data
+
 > 파이프 : https://angular.kr/guide/pipes
+
+___ 
+
+## 3. [Angular 데이터 다루기](https://angular.kr/start/start-data)
+
+서비스는 애플리케이션의 구성 요소를 통합하는 역할을 한다.  
+컴포넌트는 뷰와 직접적인 연관이 있으므로 부가적인 영역(로깅, 통신) 등을 서비스에 위임하면 복잡성이 낮아진다.  
+또한, 서비스는 이러한 영역을 공통으로 관리할 수 있어 재사용성이 높아지게 된다.
+
+```html
+<script>
+// cart.service.js
+@Injectable({
+  // 의존성 주입, 루트에 등록하면 이 인스턴스는 전역에 단 하나만 생성된다.
+  // 그리고 동일한 의존성을 주입하는 컴포넌트는 모두 같은 인스턴스를 공유한다.
+  providedIn: 'root' 
+})
+export class CartService {
+  // 장바구니 상품 배열
+  items = [];
+
+  addToCart(product) {
+    this.items.push(product);
+  }
+
+  getItems() {
+    return this.items;
+  }
+
+  clearCart() {
+    this.items = [];
+    return this.items;
+  }
+}
+
+</script>
+
+<script>
+// cart.js
+export class CartComponent implements OnInit {
+  items;
+
+  // 전역 인스턴스 cartService를 의존성 주입.
+  constructor(
+    private cartService: CartService
+  ) {}
+
+  ngOnInit() {
+    this.items = this.cartService.getItems();
+  }
+}
+
+
+</script>
+
+cart.html
+<h3>Cart</h3>
+
+<div class="cart-item" *ngFor="let item of items">
+  <span>{{ item.name }}</span>
+  <span>{{ item.price | currency }}</span>
+</div>
+```
+
+[결과 코드](https://stackblitz.com/edit/angular-y9kqxe-9weh5s?file=src%2Fapp%2Fapp.module.ts)
+
+**참고**
+> 서비스, 의존성 주입 : https://angular.kr/guide/architecture-services
+
+>
 
 ___ 
