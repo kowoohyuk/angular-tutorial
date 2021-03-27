@@ -131,7 +131,7 @@ product-details.html
 
 ___ 
 
-## 3. [Angular 데이터 다루기](https://angular.kr/start/start-data)
+## 3. [Angular 데이터 다루기 - 1](https://angular.kr/start/start-data)
 
 서비스는 애플리케이션의 구성 요소를 통합하는 역할을 한다.  
 컴포넌트는 뷰와 직접적인 연관이 있으므로 부가적인 영역(로깅, 통신) 등을 서비스에 위임하면 복잡성이 낮아진다.  
@@ -139,7 +139,7 @@ ___
 
 ```html
 <script>
-// cart.service.js
+// cart.service.ts
 @Injectable({
   // 의존성 주입, 루트에 등록하면 이 인스턴스는 전역에 단 하나만 생성된다.
   // 그리고 동일한 의존성을 주입하는 컴포넌트는 모두 같은 인스턴스를 공유한다.
@@ -166,7 +166,7 @@ export class CartService {
 </script>
 
 <script>
-// cart.js
+// cart.ts
 export class CartComponent implements OnInit {
   items;
 
@@ -180,7 +180,6 @@ export class CartComponent implements OnInit {
   }
 }
 
-
 </script>
 
 cart.html
@@ -192,11 +191,65 @@ cart.html
 </div>
 ```
 
+HttpClient를 활용하면 외부 서버에서 제공하는 데이터를 스트림 형태로 가져올 수 있다.  
+Angular HTTP 클라이언트를 사용하려면 앱에 HttpClientModule를 로드해야 한다.
+
+먼저 모듈 파일에 HttpClientModule을 로드한 이후, service에 의존성을 주입한다.  
+이후 get 메서드를 정의한다.
+
+```javascript
+
+// app.module.ts
+// @angular/common/http에 있음!
+import { HttpClientModule } from '@angular/common/http';
+
+// cart.ts
+import { HttpClient } from "@angular/common/http";
+
+constructor(private http: HttpClient) {}
+
+getShippingPrices() {
+  // get, post, update, delete, request 등.. http와 관련된 많은 기능이 지원
+  return this.http.get("/assets/shipping.json");
+}
+```
+
+이제 shipping 관련 컴포넌트를 정의한다.
+
+```html
+
+// shipping.ts
+export class ShippingComponent implements OnInit {
+  shippingCosts;
+
+  constructor(
+    private cartService: CartService
+  ) {
+  }
+
+  ngOnInit() {
+    this.shippingCosts = this.cartService.getShippingPrices();
+  }
+}
+
+<h3>Shipping Prices</h3>
+
+async 파이프는 옵저버 패턴을 사용했으며, 변경된 사항을 표시하는 역할을 한다.  
+대상이 되는 요소가 삭제되면 자동으로 unsubscribe처리된다. 
+<div class="shipping-item" *ngFor="let shipping of shippingCosts | async">
+  <span>{{ shipping.type }}</span>
+  <span>{{ shipping.price | currency }}</span>
+</div>
+```
+
 [결과 코드](https://stackblitz.com/edit/angular-y9kqxe-9weh5s?file=src%2Fapp%2Fapp.module.ts)
 
 **참고**
 > 서비스, 의존성 주입 : https://angular.kr/guide/architecture-services
-
->
-
+> HttpClient : https://angular.kr/api/common/http/HttpClient
+> async 파이프 : https://angular.kr/api/common/AsyncPipe
 ___ 
+
+
+
+
